@@ -1,4 +1,4 @@
-#prototype
+# Prototype Project 1
 
 This is a prototype project for a person registration.
 
