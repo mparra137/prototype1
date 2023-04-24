@@ -1,0 +1,50 @@
+<div class="mt-2">
+    <div class="card w-100 shadow-sm">
+        <div class="card-header d-flex justify-content-center" style="background-color: #19add8; color: white;">
+            <span class="text-white fs-5 fw-bold">Clientes</span>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-8">
+                    <div class="d-flex mb-3">
+                        <div class="flex-fill">
+                            <div class="input-group">                    
+                                <span class="input-group-text">Filtrar:</span>                                        
+                                <input type="text" placeholder="Nome ou endereço" class="form-control">                        
+                            </div>                  
+                        </div>
+                    
+                    </div>
+                </div>
+                <div class="col-md-4">
+
+                </div>
+            </div>
+            
+            <hr>
+            
+            <table class="table table-sm table-striped table-hover">
+                <thead>
+                    <tr>
+                        <th scope="col">CPF</th>
+                        <th scope="col">Nome</th>
+                        <th scope="col">Endereço</th>    
+                        <th scope="col" style="text-align: right;"><button class="btn btn-outline-primary btn-sm" routerLink="/pessoas/detalhe"><i class="fa fa-circle-plus"></i></button></th>                    
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let person of persons">
+                        <td>{{person.cpf | cpf}}</td>
+                        <td>{{person.nome}}</td>
+                        <td>{{person.endereco}}, {{person.numero}}, {{person.bairro}}, {{person.cidade}} </td>   
+                        <td style="text-align: right;"><button class="btn btn-outline-danger btn-sm"><i class="fa fa-trash-can"></i></button></td>                     
+                    </tr>
+                </tbody>    
+            </table>
+        </div>
+        
+    </div>
+</div>
+
+
+
