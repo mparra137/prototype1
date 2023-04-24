@@ -2,5 +2,5 @@
 
 This is a prototype project for a person registration.
 
-Backend - C# / Asp.Net Core webppi 
-FronEnd - Angular 14
+	Backend - C# / Asp.Net Core webppi 
+	FronEnd - Angular 14
