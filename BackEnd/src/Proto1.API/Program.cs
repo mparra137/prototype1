@@ -12,11 +12,17 @@ using Proto1.Application.Contract;
 using Proto1.Application.Services;
 using Proto1.Persistence.Contract;
 using Proto1.Persistence;
+using Microsoft.Extensions.FileProviders;
+using Proto1.API.Helpers;
+using DinkToPdf;
+using DinkToPdf.Contracts;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
+//DinkToPdf
+builder.Services.AddSingleton(typeof(IConverter), new SynchronizedConverter(new PdfTools()));
 
 builder.Services.AddControllers().AddJsonOptions(options => {
     options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
@@ -63,6 +69,8 @@ builder.Services.AddScoped<IRoleService, RoleService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IPessoaService, PessoaService>();
 
+builder.Services.AddScoped<IUtil, Util>();
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -83,6 +91,10 @@ app.UseAuthorization();
 
 app.UseCors(cors => cors.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin());
 
+app.UseStaticFiles(new StaticFileOptions(){
+    FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), "Resources")),
+    RequestPath = new PathString("/Resources")
+});
 
 app.MapControllers();
 

@@ -5,19 +5,21 @@
         </div>
         <div class="card-body">
             <div class="row">
-                <div class="col-md-8">
+                <div class="col-md-10">
                     <div class="d-flex mb-3">
                         <div class="flex-fill">
                             <div class="input-group">                    
                                 <span class="input-group-text">Filtrar:</span>                                        
-                                <input type="text" placeholder="Nome ou endereço" class="form-control">                        
+                                <input type="text" placeholder="Nome ou endereço" [(ngModel)]="term" (ngModelChange)="filterData()" class="form-control">                        
                             </div>                  
                         </div>
                     
                     </div>
-                </div>
-                <div class="col-md-4">
-
+                </div>                
+            </div>
+            <div class="row">
+                <div class="col">
+                    <a class="btn btn-primary" (click)="exportPDF()"><i class="fa fa-file-pdf"></i> Exportar</a>
                 </div>
             </div>
             
@@ -33,11 +35,11 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr *ngFor="let person of persons">
+                    <tr *ngFor="let person of persons" (click)="personDetail(person.id)">
                         <td>{{person.cpf | cpf}}</td>
                         <td>{{person.nome}}</td>
-                        <td>{{person.endereco}}, {{person.numero}}, {{person.bairro}}, {{person.cidade}} </td>   
-                        <td style="text-align: right;"><button class="btn btn-outline-danger btn-sm"><i class="fa fa-trash-can"></i></button></td>                     
+                        <td>{{person.endereco}}, {{person.numero}}, {{person.bairro}}, {{person.cidade}} - {{person.uf}} </td>   
+                        <td style="text-align: right;"><button class="btn btn-outline-danger btn-sm" (click)="openModalDelete(modal, $event, person)"><i class="fa fa-trash-can"></i></button></td>                     
                     </tr>
                 </tbody>    
             </table>
@@ -45,6 +47,17 @@
         
     </div>
 </div>
+
+<ng-template #modal>
+    <div class="modal-header">
+        <h4 class="modal-title text-center">Excluir</h4>
+    </div>
+    <div class="modal-body text-center">
+        <p>Tem certeza que deseja excluir {{pessoaAux.nome}}?</p>
+        <button type="button" class="btn btn-warning" (click)="confirmDelete()" >Sim</button>
+        <button type="button" class="btn btn-primary ms-1" (click)="declineDelete()" >Não</button>
+      </div>
+</ng-template>
 
 
 

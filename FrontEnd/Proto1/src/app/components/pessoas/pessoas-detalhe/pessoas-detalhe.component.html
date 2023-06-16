@@ -12,11 +12,12 @@
                     <span class="invalid-feedback">Nome é obrigatório</span>
                 </div>
                 
-                <div class="form-group col-md-2">
+                <div class="form-group col-md-3">
                     <label class="form-label">CPF</label>
-                    <input type="text" class="form-control cpf" formControlName="cpf" #cpf mask="000.000.000-00" [ngClass]="cssValidator(f.cpf, cpf.getAttribute('formcontrolname'))">
+                    <input type="text" class="form-control cpf" formControlName="cpf" #cpf mask="000.000.000-00" [ngClass]="cssValidator(f.cpf, cpf.getAttribute('formcontrolname'))" [readonly]="mode=='UPD'">
                     <span *ngIf="f.cpf.errors?.required" class="invalid-feedback">CPF é obrigatório</span>
                     <span *ngIf="f.cpf.errors?.invalidCPF" class="invalid-feedback">CPF inválido</span>
+                    <span *ngIf="f.cpf.errors?.personExists" class="invalid-feedback">Já existe cadastro para o CPF digitado</span>
                 </div>
             </div>  
             <div class="row">
@@ -51,7 +52,7 @@
                 </div>
                 <div class="form-group col-md-1">
                     <label for="" class="form-label">UF</label>                    
-                    <select class="form-select" formControlName="uf">
+                    <select class="form-select" formControlName="uf" tabindex="-1" aria-disabled="true">
                         <option value=""></option>
                         <option value="AC">AC</option>
                         <option value="AL">AL</option>
@@ -63,8 +64,9 @@
                         <option value="ES">ES</option>
                         <option value="GO">GO</option>
                         <option value="MA">MA</option>
-                        <option value="MS">MS</option>
                         <option value="MG">MG</option>
+                        <option value="MS">MS</option>
+                        <option value="MT">MT</option>                        
                         <option value="PA">PA</option>
                         <option value="PB">PB</option>
                         <option value="PR">PR</option>
@@ -86,7 +88,7 @@
             </div>
             <div class="card-footer">
                 <div class="d-flex">                    
-                    <button class="btn btn-warning ms-auto border" routerLink="..">Cancelar</button>                    
+                    <button class="btn btn-warning ms-auto border" routerLink="/pessoas/lista">Cancelar</button>                    
                     <button type="submit" class="btn btn-success ms-2" [disabled]="!form.valid">Salvar</button>
                 </div>
             </div>

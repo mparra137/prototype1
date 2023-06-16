@@ -1,4 +1,6 @@
-import { AbstractControl, ValidatorFn, ValidationErrors } from "@angular/forms";
+import { PersonService } from "@app/services/person.service";
+import { AbstractControl, ValidatorFn, ValidationErrors, AsyncValidatorFn } from "@angular/forms";
+import { map } from "rxjs";
 
 export function CPFValidator(): ValidatorFn {
     return (control: AbstractControl) : ValidationErrors | null => {
@@ -39,9 +41,14 @@ export function CPFValidator(): ValidatorFn {
             
             return (secCheckValue !== lastNumber) ? {invalidCPF: true} : null;    
             
-        }
-
-        return null;
+        }        
     }
+}
 
+export function personExistsValidator(personService: PersonService) : AsyncValidatorFn {
+    return (control: AbstractControl) => {
+        return personService.searchByCPF(control.value).pipe(map(
+            result => result.hasEntry ? {personExists: true} : null 
+        ));
+    }
 }

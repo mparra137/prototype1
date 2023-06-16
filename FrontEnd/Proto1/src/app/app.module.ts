@@ -1,11 +1,12 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 //ngx-bootstrap
 import { CollapseModule } from 'ngx-bootstrap/collapse';
+import { ModalModule } from 'ngx-bootstrap/modal';
 import { ToastrModule } from 'ngx-toastr';
 import { NgxSpinnerModule } from 'ngx-spinner';
 
@@ -25,6 +26,11 @@ import { CpfPipe } from './helper/CpfPipe.pipe';
 
 //Services
 import { CepService } from './services/cep.service';
+import { UserComponent } from './components/user/user.component';
+import { LoginComponent } from './components/user/login/login.component';
+import { JwtInterceptor } from './Interceptors/jwt.interceptor';
+
+
 
 @NgModule({
   declarations: [
@@ -34,7 +40,9 @@ import { CepService } from './services/cep.service';
     PessoasDetalheComponent,
     PessoasListaComponent,
     HomeComponent,
-    CpfPipe
+    CpfPipe,
+    UserComponent,
+    LoginComponent
   ],
   imports: [
     BrowserModule,
@@ -51,9 +59,10 @@ import { CepService } from './services/cep.service';
       progressBar: true
     }),
     NgxSpinnerModule.forRoot(),
-    NgxMaskModule.forRoot()
+    NgxMaskModule.forRoot(),
+    ModalModule.forRoot()
   ],
-  providers: [CepService],
+  providers: [CepService, {provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true}],
   bootstrap: [AppComponent]
 })
 export class AppModule { 

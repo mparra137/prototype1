@@ -6,17 +6,23 @@ using Microsoft.AspNetCore.Mvc;
 using Proto1.Application.Contract;
 using Proto1.Application.DTOs;
 using Proto1.Application.Services;
+using Proto1.API.Helpers;
+using Microsoft.AspNetCore.Authorization;
+using Proto1.Persistence.Models;
 
 namespace Proto1.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize]
 public class PessoaController : ControllerBase
 {
     private readonly IPessoaService pessoaService;
+    private readonly IUtil util;
 
-    public PessoaController(IPessoaService pessoaService)
+    public PessoaController(IPessoaService pessoaService, IUtil util)
     {
+            this.util = util;
         this.pessoaService = pessoaService;        
     }
     
@@ -34,11 +40,11 @@ public class PessoaController : ControllerBase
         }
     }
 
-    [HttpGet("all")]
-    public async Task<IActionResult> GetAll(){
+    [HttpGet]
+    public async Task<IActionResult> GetAll([FromQuery] PageParams pageParams){
         try
         {
-            var pessoas = await pessoaService.GetAll();
+            var pessoas = await pessoaService.GetAllAsync(pageParams);
             if (pessoas == null) return NoContent();
 
             return Ok(pessoas);
@@ -64,7 +70,7 @@ public class PessoaController : ControllerBase
         }
     }
 
-    [HttpGet("cpf/{cpf}")]
+    [HttpGet("checkcpf/{cpf}")]
     public async Task<IActionResult> GetByCPF(string cpf){
         try
         {
@@ -96,5 +102,34 @@ public class PessoaController : ControllerBase
         {
             return this.StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
         }
+    }
+
+    [HttpGet("report/all")]
+    public async Task<IActionResult> GeneratePDFReport([FromQuery] PageParams pageParams){
+        try
+        {
+            var ListaPessoas = await pessoaService.GetAllAsync(pageParams);   
+
+            //await util.createTxtFile();
+            var pdfFile = await util.createPdfFile(ListaPessoas);
+            Response.Headers.Add("Access-Control-Expose-Headers", "content-disposition");
+            return File(pdfFile, "application/octet-stream", "pessoas.pdf");    
+        }
+        catch (Exception ex)
+        {            
+            throw new Exception(ex.Message);
+        }
+        
+    }
+
+    [HttpGet("teste")]
+    public IActionResult Teste(){
+        string result = DateTime.UtcNow.ToString("yyyyMMddHHmmss");
+        string result2 = DateTime.UtcNow.ToLocalTime().ToString("yyyyMMddHHmmssfff");
+
+        return Ok(new {
+            UTCTime = result,
+            LocalTime = result2
+        });
     }
 }

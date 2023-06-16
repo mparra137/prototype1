@@ -8,6 +8,7 @@ using Proto1.Application.DTOs;
 using Proto1.Domain;
 using Proto1.Persistence;
 using Proto1.Persistence.Contract;
+using Proto1.Persistence.Models;
 
 namespace Proto1.Application.Services;
 
@@ -58,12 +59,12 @@ public class PessoaService : IPessoaService
         }
     }
 
-    public async Task<List<PessoaDto>> GetAll()
+    public async Task<PageList<PessoaDto>> GetAllAsync(PageParams pageParams)
     {
         try
         {
-            var pessoas = await pessoaPersist.GetPessoasAsync();
-            return mapper.Map<List<PessoaDto>>(pessoas);
+            var pessoas = await pessoaPersist.GetAllAsync(pageParams);
+            return mapper.Map<PageList<PessoaDto>>(pessoas);
         }
         catch (Exception ex)
         {            
