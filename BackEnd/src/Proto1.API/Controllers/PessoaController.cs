@@ -9,6 +9,7 @@ using Proto1.Application.Services;
 using Proto1.API.Helpers;
 using Microsoft.AspNetCore.Authorization;
 using Proto1.Persistence.Models;
+using Proto1.API.Extensions;
 
 namespace Proto1.API.Controllers;
 
@@ -22,7 +23,7 @@ public class PessoaController : ControllerBase
 
     public PessoaController(IPessoaService pessoaService, IUtil util)
     {
-            this.util = util;
+        this.util = util;
         this.pessoaService = pessoaService;        
     }
     
@@ -46,6 +47,8 @@ public class PessoaController : ControllerBase
         {
             var pessoas = await pessoaService.GetAllAsync(pageParams);
             if (pessoas == null) return NoContent();
+
+            Response.AddPagination(pessoas.CurrentPage, pessoas.PageSize, pessoas.TotalPages, pessoas.TotalCount);
 
             return Ok(pessoas);
         }

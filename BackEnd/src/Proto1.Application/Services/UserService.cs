@@ -20,13 +20,15 @@ public class UserService : IUserService
     private readonly IMapper mapper;
     private readonly SignInManager<User> signInManager;
     private readonly IUserPersist userPersist;
+    private readonly IRoleService roleService;
 
-    public UserService(UserManager<User> userManager, IMapper mapper, SignInManager<User> signInManager, IUserPersist userPersist )
+    public UserService(UserManager<User> userManager, IMapper mapper, SignInManager<User> signInManager, IUserPersist userPersist, IRoleService roleService )
     {
         this.userManager = userManager;
         this.mapper = mapper;
         this.signInManager = signInManager;
         this.userPersist = userPersist;
+        this.roleService = roleService;
     }
     public async Task<SignInResult> CheckUserPasswordAsync( string userName, string password)
     {
@@ -78,5 +80,46 @@ public class UserService : IUserService
             throw new Exception(ex.Message);
         }
     }
+
+    public async Task<List<UserCreateDto>> GetUsersAsync(){
+        try
+        {
+            var usersList = await userPersist.GetUsersAsync();
+            if (usersList == null) return null;
+
+            return mapper.Map<List<UserCreateDto>>(usersList);
+        }
+        catch (Exception ex)
+        {            
+            throw new Exception("Error while trying to get users list: " + ex.Message);
+        }
+    }
+
+    public async Task<bool> AssignRole(string userName, string roleName){
+        try
+        {
+            var user = await userPersist.GetUserByUserNameAsync(userName);
+            if (user == null) throw new Exception("invalid username");
+
+            if (! await roleService.RoleExists(roleName)) throw new Exception("Invalid Role");
+
+            if (!await userManager.IsInRoleAsync(user, roleName)){
+                var result = await userManager.AddToRoleAsync(user, roleName);
+
+                if (result.Succeeded){
+                    return true;
+                } else {
+                    throw new Exception("Assignment to role not possible. Errors: " + result.Errors.ToString());
+                }
+            }
+            return false;
+            
+        }
+        catch (Exception ex)
+        {            
+            throw new Exception("Error while trying to assign role to user: " + ex.Message);
+        }
+    }
+    
     
 }

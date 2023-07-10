@@ -64,7 +64,16 @@ public class PessoaService : IPessoaService
         try
         {
             var pessoas = await pessoaPersist.GetAllAsync(pageParams);
-            return mapper.Map<PageList<PessoaDto>>(pessoas);
+            if (pessoas == null) return null;
+
+            var result = mapper.Map<PageList<PessoaDto>>(pessoas);
+
+            result.CurrentPage = pessoas.CurrentPage;
+            result.TotalPages  = pessoas.TotalPages;
+            result.PageSize    = pessoas.PageSize;
+            result.TotalCount  = pessoas.TotalCount;
+
+            return result;
         }
         catch (Exception ex)
         {            

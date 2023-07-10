@@ -1,9 +1,10 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams, HttpResponse } from '@angular/common/http';
 import { Person } from '@app/model/Person';
-import { Observable, take } from 'rxjs';
+import { Observable, map, take } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { query } from '@angular/animations';
+import { PaginatedResult } from '@app/model/Pagination';
 
 @Injectable({
   providedIn: 'root'
@@ -13,13 +14,43 @@ export class PersonService {
   
   constructor(private http: HttpClient) { }
 
-  public getList(searchTerm?: string): Observable<Person[]>{
+  public getListOld(currentPage: number, itemsPerPage: number, searchTerm?: string): Observable<Person[]>{
     let queryParams: HttpParams = new HttpParams();    
+    if (currentPage){
+      queryParams = queryParams.append("PageNumber", currentPage);
+    }
+    if (itemsPerPage){
+      queryParams = queryParams.append("PageSize", itemsPerPage);
+    }
     if (searchTerm){      
       queryParams = queryParams.set("searchTerm", searchTerm);      
     }    
 
     return this.http.get<Person[]>(`${this.baseUrl}`, {params: queryParams}).pipe(take(1));
+  }
+
+  public getList(currentPage: number, itemsPerPage: number, searchTerm?: string) : Observable<PaginatedResult<Person[]>>{
+    const paginatedResult: PaginatedResult<Person[]> = new PaginatedResult();
+    let queryParams: HttpParams = new HttpParams();    
+    if (currentPage){
+      queryParams = queryParams.append("PageNumber", currentPage);
+    }
+    if (itemsPerPage){
+      queryParams = queryParams.append("PageSize", itemsPerPage);
+    }
+    if (searchTerm){      
+      queryParams = queryParams.set("searchTerm", searchTerm);      
+    }    
+
+    return this.http.get<Person[]>(`${this.baseUrl}`, {params: queryParams, observe: 'response'}).pipe(take(1), 
+      map((response) => {
+        //console.log(response);
+        paginatedResult.result = response.body as Person[];
+        if (response.headers.has("pagination")){
+          paginatedResult.pagination = JSON.parse(response.headers.get("pagination") || "{}");
+        }
+        return paginatedResult;
+      }));
   }
 
   public getById(id: number): Observable<Person>{

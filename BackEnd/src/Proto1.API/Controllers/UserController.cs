@@ -65,22 +65,23 @@ namespace Proto1.API.Controllers
             {                
                 return this.StatusCode(StatusCodes.Status500InternalServerError, $"Server Error: {ex.Message}");
             }
-        }
+        }        
 
         [AllowAnonymous]
-        [HttpPost("role/{roleName}")]
-        public async Task<IActionResult> CreateRole(string roleName){
+        [HttpGet]
+        public async Task<IActionResult> GetUsersList(){
             try
-            {                
-                var isRoleCreated = await roleService.CreateRoleAsync(roleName);
-                if (!isRoleCreated) return BadRequest("Role was not created");
+            {
+                var users = await userService.GetUsersAsync();
+                if (users == null) return NoContent();
 
-                return Ok("Resource Created");
+                return Ok(users);
             }
             catch (Exception ex)
-            {                
+            {
                 return this.StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+                
             }
-        }   
+        }
     }
 }

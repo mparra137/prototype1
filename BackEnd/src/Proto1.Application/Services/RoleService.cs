@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Proto1.Application.Contract;
 using Proto1.Domain.Identity;
 
@@ -34,6 +35,33 @@ public class RoleService : IRoleService
         }
         
     }
+
+    public async Task<List<Role>> ListRoles(){
+        try
+        {
+            var rolesList = await roleManager.Roles.ToListAsync();        
+            if (rolesList == null) return  null;
+
+            return rolesList;
+        }
+        catch (Exception ex)
+        {            
+            throw new Exception("Error while trying to retrieve roles list: " + ex.Message);
+        }     
+       
+    }
+
+    public async Task<bool> RoleExists2(string roleName){
+        try{
+            return await roleManager.RoleExistsAsync(roleName);
+        }   
+        catch (Exception ex){
+            throw new Exception("Error while trying to check role existence: " + ex.Message);
+        }
+    }
+
+    public async Task<bool> RoleExists(string roleName) => await roleManager.RoleExistsAsync(roleName);
+
 
     //public async Task<bool> CreateClaimAsync(){}
 }

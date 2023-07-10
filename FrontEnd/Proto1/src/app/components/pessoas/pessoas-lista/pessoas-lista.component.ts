@@ -1,4 +1,4 @@
-import { Component, OnInit, TemplateRef } from '@angular/core';
+import { Component, OnInit, TemplateRef, OnDestroy } from '@angular/core';
 import { Person } from '@app/model/Person';
 import { PersonService } from '@app/services/person.service';
 import { NgxSpinnerService } from 'ngx-spinner';
@@ -7,6 +7,8 @@ import { Router } from '@angular/router';
 import { BsModalService, BsModalRef } from 'ngx-bootstrap/modal';
 import { Subject, debounceTime, distinctUntilChanged } from 'rxjs';
 import { HttpResponse } from '@angular/common/http';
+import { PageChangedEvent } from 'ngx-bootstrap/pagination';
+import { PaginatedResult, Pagination } from '@app/model/Pagination';
 
 @Component({
   selector: 'app-pessoas-lista',
@@ -19,20 +21,30 @@ export class PessoasListaComponent implements OnInit {
   public persons: Person[] = [];
   public term?: string;
 
+  //pagination
+  public pagination: Pagination = new Pagination();
+
   public searchTermChanged: Subject<string> = new Subject();
 
   constructor(private personService: PersonService, private spinner: NgxSpinnerService, private toastr: ToastrService, private router: Router, private modalService: BsModalService) { }
 
   ngOnInit(): void {
+    this.pagination = {currentPage: 1, pageSize: 5, totalCount: 1, totalPages: 1}
+    this.pagination.currentPage = +sessionStorage.getItem('pagination.currentPage')!;
     this.loadList();
     this.createFilterSubject();
   }
 
+  ngOnDestroy(): void{
+    sessionStorage.removeItem('pagination.currentPage');
+  }
+
   public loadList(): void{
     this.spinner.show();
-    this.personService.getList().subscribe({
-      next: (returnedData: Person[]) => {
-        this.persons = returnedData;
+    this.personService.getList(this.pagination.currentPage, this.pagination.pageSize).subscribe({
+      next: (returnedData: PaginatedResult<Person[]>) => {
+        this.persons = returnedData.result;
+        this.pagination = returnedData.pagination;        
       },
       error: (error: any) => {
         console.log(error);
@@ -50,9 +62,10 @@ export class PessoasListaComponent implements OnInit {
     if (!this.searchTermChanged.observed){
       this.searchTermChanged.pipe(debounceTime(1000), distinctUntilChanged()).subscribe(data => {        
         this.spinner.show();
-        this.personService.getList(data).subscribe({
-          next: (returnedData: Person[]) => {
-            this.persons = returnedData;            
+        this.personService.getList(this.pagination.currentPage, this.pagination.pageSize, data).subscribe({
+          next: (returnedData: PaginatedResult<Person[]>) => {
+            this.persons = returnedData.result;
+            this.pagination = returnedData.pagination;            
           },
           error: (error: any) => {
             console.error(error);
@@ -124,6 +137,12 @@ export class PessoasListaComponent implements OnInit {
       fileName = 'file.pdf';
     }
     return fileName;
+  }
+
+  public pageChange(event: PageChangedEvent): void{
+    this.pagination.currentPage = event.page;
+    sessionStorage.setItem('pagination.currentPage', this.pagination.currentPage.toString());
+    this.loadList();
   }
 
 }

@@ -13,4 +13,8 @@ public interface IUserService
     Task<UserCreateDto> CreateAccountAsync(UserCreateDto userDto);
     Task<SignInResult> CheckUserPasswordAsync(string userName ,string password);
     Task<UserCreateDto> GetUserByUsernameAsync(string userName);
+
+    Task<List<UserCreateDto>> GetUsersAsync();
+
+    Task<bool> AssignRole(string userName, string roleName);
 }
