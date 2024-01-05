@@ -10,5 +10,6 @@ namespace Proto1.Persistence.Contract
     {
         Task<User> GetUserByUserNameAsync(string userName); 
         Task<List<User>> GetUsersAsync();
+        Task<User> GetUserByIdAsync(int id);
     };
 }

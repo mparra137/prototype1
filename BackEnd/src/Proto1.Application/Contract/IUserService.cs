@@ -17,4 +17,10 @@ public interface IUserService
     Task<List<UserCreateDto>> GetUsersAsync();
 
     Task<bool> AssignRole(string userName, string roleName);
+    Task<bool> RemoveRoleFromUser(string userName, string roleName);
+    Task<IList<string>> GetUserRoles(string userName);
+
+    Task<UserData> GetUserByIdAsync(int id);
+
+    Task AssignListOfRolesAsync(string userName, List<RoleUpdate> roles);
 }

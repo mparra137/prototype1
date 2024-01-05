@@ -13,5 +13,6 @@ public class ProtoProfile : Profile
     {
         CreateMap<User, UserCreateDto>().ReverseMap();   
         CreateMap<Pessoa, PessoaDto>().ReverseMap();
+        CreateMap<User, UserData>().ReverseMap();
     }
 }

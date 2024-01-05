@@ -26,4 +26,9 @@ public class UserPersist : IUserPersist
         var query = context.Users;
         return await query.ToListAsync();
     }
+
+    public async Task<User> GetUserByIdAsync(int id){
+        var query = context.Users;
+        return await query.FirstOrDefaultAsync(u => u.Id == id);
+    }
 }

@@ -26,14 +26,16 @@ export class JwtInterceptor implements HttpInterceptor {
       }      
     });
 
-    return next.handle(request).pipe(
+    return next.handle(request);
+    /*.pipe(
       catchError((error:any, caught: Observable<any>) => {
         console.error('Interceptor catch: ', error);
 
-        this.route.navigate(["/user/login"]);
+        //this.route.navigate(["/user/login"]);
 
         throw new Error(error);                    
       })
     );
+    */
   }
 }

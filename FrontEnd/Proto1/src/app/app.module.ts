@@ -27,9 +27,14 @@ import { CpfPipe } from './helper/CpfPipe.pipe';
 
 //Services
 import { CepService } from './services/cep.service';
+import { UserService } from './services/user.service';
+
 import { UserComponent } from './components/user/user.component';
 import { LoginComponent } from './components/user/login/login.component';
 import { JwtInterceptor } from './Interceptors/jwt.interceptor';
+import { UserListComponent } from './components/user/user-list/user-list.component';
+import { UserDetailComponent } from './components/user/user-detail/user-detail.component';
+
 
 
 
@@ -43,7 +48,9 @@ import { JwtInterceptor } from './Interceptors/jwt.interceptor';
     HomeComponent,
     CpfPipe,
     UserComponent,
-    LoginComponent
+    LoginComponent,
+    UserListComponent,
+    UserDetailComponent
   ],
   imports: [
     BrowserModule,
@@ -64,7 +71,7 @@ import { JwtInterceptor } from './Interceptors/jwt.interceptor';
     ModalModule.forRoot(),
     PaginationModule.forRoot()
   ],
-  providers: [CepService, {provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true}],
+  providers: [CepService, UserService, {provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true}],
   bootstrap: [AppComponent]
 })
 export class AppModule { 

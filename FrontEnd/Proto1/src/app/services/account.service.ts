@@ -36,4 +36,8 @@ export class AccountService {
     this.signedInUser.next(null as any);      
     this.router.navigateByUrl("/user/login");
   }
+
+  public checkToken(): Observable<any>{
+    return this.http.get(`${this.baseUrl}/checktoken`).pipe(take(1));
+  }
 }

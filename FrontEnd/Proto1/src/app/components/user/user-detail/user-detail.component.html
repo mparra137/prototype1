@@ -1,0 +1,144 @@
+<div class="card mt-3 shadow-lg">    
+    <div class="card-body">        
+
+        <div class="TitleBar rounded-2 mb-2 ps-2 pt-2 ms-1">            
+            <div class="d-flex d-inline"><i class="fa fa-user-edit fa-2x"></i><h3 class="ms-2"> {{userData.userName}}</h3></div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6">
+                <div class="container">
+                    <div class="row mb-1">
+                        <div class="col-sm-3 text-dark bg-info border rounded-1 p-1 ms-1">
+                            <label class="ms-2">Usuário:</label>
+                        </div>
+                        <div class="col-sm-4 text-dark bg-light border rounded-1 p-1 ps-2 ms-1">
+                            {{userData.userName}}
+                        </div>
+                    </div>
+                    <div class="row mb-1">
+                        <div class="col-sm-3 text-dark bg-info border rounded-1 p-1 ms-1" >
+                            <label for="" class="ms-2">Nome:</label>
+                        </div>
+                        <div class="col-sm-4 text-dark bg-light border ms-1 rounded-1 p-1 ps-2">
+                            {{userData.name}}
+                        </div>
+                    </div>
+                    <div class="row mb-1">
+                        <div class="col-sm-3 text-dark bg-info border rounded-1 p-1 ms-1">
+                            <label for="" class="ms-2">Sobrenome:</label>
+                        </div>
+                        <div class="col-sm-4 text-dark bg-light border ms-1 rounded-1 p-1 ps-2">
+                            {{userData.lastName}}
+                        </div>
+                    </div>
+                    <div class="row mb-1">
+                        <div class="col-sm-3 text-dark bg-info border rounded-1 p-1 ms-1">
+                            <label for="" class="ms-2">Email:</label>
+                        </div>
+                        <div class="col-sm-4 text-dark bg-light border ms-1 rounded-1 p-1 ps-2">
+                            {{userData.email}}
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="col-md-6">
+                <div class="card shadow-sm">
+
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <table class="table table-sm">
+                                    <thead class="table-secondary">
+                                        <tr>
+                                            <th colspan="2">Roles do Usuário</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="table-group-divider">
+                                        <ng-container *ngIf="userData?.roles && hasRoles()">
+                                            <tr class="table-info" *ngFor="let role of userData.roles; index as i">
+                                                <td> {{role}} </td>
+                                                <td (click)="RemoveRole(i)" style="cursor: pointer;" class="text-end"> <i class="fa fa-minus-circle" style="color: red;"></i></td>
+                                            </tr>
+                                        </ng-container>
+                                        <ng-container *ngIf=" userData?.roles && !hasRoles()">
+                                            <tr class="table-warning">
+                                                <td>----</td>
+                                            </tr>
+                                        </ng-container>
+                                        
+                                    </tbody>
+                                </table>
+                                <div class="d-flex flex-column" >
+                                    <button type="button" class="btn btn-primary" (click)="OpenModal(template)"><i class="fa fa-plus-circle"></i> Adicionar</button>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                
+                            </div>
+                           
+                        </div>
+                        
+                    </div>
+
+                </div>                      
+            </div>
+
+        </div>             
+    </div>
+
+    <div class="card-footer">
+        <button class="btn btn-warning" (click)="ReturnToList()">Voltar</button>
+    </div>        
+</div>
+
+
+<ng-template #template>
+    <div class="modal-header">
+      <h4 class="modal-title pull-left">Roles</h4>
+      <button type="button" class="btn-close close pull-right" aria-label="Close" (click)="modalRef?.hide()">
+        <span aria-hidden="true" class="visually-hidden">&times;</span>
+      </button>
+    </div>
+    <div class="modal-body">
+        <div class="row">
+            <div class="col">
+                Selecione abaixo as roles à atribuir ao usuario:
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <div [formGroup]="form">
+                    <table class="table table-bordered bg-light table-striped">
+                        
+                        <tbody>
+                            <tr formArrayName="roles" *ngFor="let role of roles.controls; let i=index">
+                                <td [formGroupName]="i">                                    
+                                    <input type="checkbox" class="form-check-input form-check-inline" formControlName="selected">                                                                        
+                                    {{ role.get('roleName')?.value }}   
+                                    <input type="text" formControlName="roleName" hidden>                                                                         
+                                </td>                                    
+                            </tr>
+                        </tbody>                    
+    
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="d-flex"> 
+            
+                <button type="button" class="btn btn-danger w-25" (click)="closeModal()"> <i class="fa fa-close"></i> Cancelar</button>
+                
+                <button type="button" class="btn btn-success ms-auto w-25" (click)="SaveSelectedRoles()"> <i class="fa fa-save"></i> Salvar</button>   
+       
+           
+        </div>
+    </div>
+  </ng-template>
+
+
+<!-- <tr *ngFor="let role of rolesUpdate; index as i">
+    <td style="width: 5%;"><input type="checkbox"></td>
+    <td>{{role.roleName}}</td>
+</tr> -->

@@ -6,6 +6,8 @@ import { PessoasDetalheComponent } from './components/pessoas/pessoas-detalhe/pe
 import { HomeComponent } from './components/home/home.component';
 import { UserComponent } from './components/user/user.component';
 import { LoginComponent } from './components/user/login/login.component';
+import { UserListComponent } from './components/user/user-list/user-list.component';
+import { UserDetailComponent } from './components/user/user-detail/user-detail.component';
 
 const routes: Routes = [
   {path: "home", component: HomeComponent},  
@@ -16,7 +18,9 @@ const routes: Routes = [
     {path: "lista", component: PessoasListaComponent},
   ]},  
   {path: "user", component: UserComponent, children: [
-    {path: "login", component: LoginComponent}
+    {path: "login", component: LoginComponent},
+    {path: "user-list", component: UserListComponent},
+    {path: "user-detail/:id", component: UserDetailComponent}
   ]},
   {path: "", component: HomeComponent},
   {path: "**", component: HomeComponent}

@@ -49,11 +49,11 @@ namespace Proto1.API.Controllers
             try
             {
                 var user = await userService.GetUserByUsernameAsync(userLogin.UserName);
-                if (user == null) return Unauthorized("Invalid Username or Password");
+                if (user == null) return Unauthorized("Usuário ou senha inválidos");
                 
                 var result = await userService.CheckUserPasswordAsync(userLogin.UserName, userLogin.Password);
                 if (!result.Succeeded)
-                    return Unauthorized("Invalid Username or Password");
+                    return Unauthorized("Usuário ou senha inválidos");
 
                 return Ok(new {
                     userName = user.UserName,
@@ -67,7 +67,7 @@ namespace Proto1.API.Controllers
             }
         }        
 
-        [AllowAnonymous]
+        [Authorize(Roles ="Administrator")]
         [HttpGet]
         public async Task<IActionResult> GetUsersList(){
             try
@@ -82,6 +82,94 @@ namespace Proto1.API.Controllers
                 return this.StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
                 
             }
+        }
+
+        [Authorize(Roles ="Administrator")]
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetUserById(int id){
+            try
+            {
+                var userData = await userService.GetUserByIdAsync(id);
+                if (userData == null) return NoContent();
+
+                return Ok(userData);
+            }
+            catch (Exception ex)
+            {
+                return this.StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+        }
+
+        [Authorize(Roles ="Administrator")]
+        [HttpPost("assignRole")]
+        public async Task<IActionResult> AssignRoleToUser(string userName, string roleName){
+            try{
+                var success = await userService.AssignRole(userName, roleName);
+                
+                return Ok(new {
+                    Ok = success
+                });              
+
+            } catch (Exception ex){
+                return this.StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+        }
+
+        [Authorize(Roles ="Administrator")]
+        [HttpPost("assignListofRoles")]
+        public async Task<IActionResult> AssignListOfRoles(string userName, List<RoleUpdate> rolesList){
+            try
+            {
+                await userService.AssignListOfRolesAsync(userName, rolesList);
+                return Ok();
+            }
+            catch (Exception ex) 
+            {
+                return this.StatusCode(StatusCodes.Status500InternalServerError, ex.Message);               
+            }        
+        }
+
+
+        [Authorize(Roles ="Administrator")]
+        [HttpPost("removeRole")]
+        public async Task<IActionResult> RemoveRoleFromUser(string userName, string roleName){
+            try
+            {
+                bool success = await userService.RemoveRoleFromUser(userName, roleName);
+                
+                return Ok(new {
+                    Success = success
+                });                
+            }
+            catch (Exception ex)
+            {                
+                return this.StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+        }
+
+        [Authorize(Roles ="Administrator")]
+        [HttpGet("roles")]
+        public async Task<IActionResult> Roles(string userName){
+            try
+            {
+                var user = await userService.GetUserByUsernameAsync(userName);
+                if (user == null) return NoContent();
+
+                var rolesList = await userService.GetUserRoles(userName);
+
+                return Ok(rolesList);
+            }
+            catch (Exception ex)
+            {                
+                return this.StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+        }
+
+        [HttpGet("checktoken")]
+        public IActionResult CheckToken(){
+            return Ok(new {
+                Ok = "success"
+            });
         }
     }
 }
